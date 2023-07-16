@@ -23,13 +23,14 @@ mytoken = file.read()
 # Передаем сюда токен, который получили от FatherBot
 bot = telebot.TeleBot(mytoken)
 # Варианты ответов пользователю, если тот ввел непонятное боту сообщение
-answers = ['Я не зрозумів,що ти хочеш сказати.', 'Вибач,я не зрозумів тебе.', 'Я не знаю цієї команди.', 'Мій творець не казав,як відповідати на цю ситуацію... >_<']
+answers = ['Я не зрозумів,що ти хочеш сказати.', 'Вибач,я не зрозумів тебе.', 'Я не знаю цієї команди.',
+           'Мій творець не казав,як відповідати на цю ситуацію... >_<']
 
 # Обработка команды /start
 allowed_user_id = 788388571
+
+
 @bot.message_handler(commands=['start'])
-
-
 def welcome(message):
     # Добавляем кнопки, которые будут появляться после ввода команды /start
 
@@ -50,7 +51,7 @@ def welcome(message):
     button2 = types.KeyboardButton('🧳Мої речі')
     button3 = types.KeyboardButton('❓Як все працює')
     button4 = types.KeyboardButton('👥Про нас')
-    button5=types.KeyboardButton("Відправити ціну")
+    button5 = types.KeyboardButton("Відправити ціну")
     # Разделяю кнопки по строкам так, чтобы товары были отдельно от остальных кнопок
     markup.row(button1)
     markup.row(button2)
@@ -61,13 +62,11 @@ def welcome(message):
 
     if message.text == '/start':
         # Отправляю приветственный текст
-        bot.send_message(message.chat.id, f'Привіт, {message.from_user.first_name}!\nВітаємо у нашому магазині одягу,де ви можете продати свої речі!', reply_markup=markup)
+        bot.send_message(message.chat.id,
+                         f'Привіт, {message.from_user.first_name}!\nВітаємо у нашому магазині одягу,де ви можете продати свої речі!',
+                         reply_markup=markup)
     else:
         bot.send_message(message.chat.id, 'Закинув тебе в головне меню,вибирай!', reply_markup=markup)
-
-
-
-
 
 
 # Обработка обычных текстовых команд, описанных в кнопках
@@ -77,7 +76,7 @@ def info(message):
         goodsChapter(message)
     elif message.text == '❓Як все працює':
         settingsChapter(message)
-    elif message.text=='🧳Мої речі':
+    elif message.text == '🧳Мої речі':
         my_items(message)
     elif message.text == '👥Про нас':
         infoChapter(message)
@@ -87,10 +86,10 @@ def info(message):
         handle_send_price(message)
     elif message.text == "Речі,які ми купуємо":
         handle_buying_items(message)
-    elif message.text=="Я відправив усі фото":
+    elif message.text == "Я відправив усі фото":
         send_all_photos(message)
     elif message.text == 'Як проходить оцінка товару?':
-            OtsinkaTovaru(message)
+        OtsinkaTovaru(message)
 
 
 
@@ -98,7 +97,7 @@ def info(message):
 
 
 
-    elif message.text=='Відправити фото речей':
+    elif message.text == 'Відправити фото речей':
         sentPhotoChapter(message)
         global last_order_number
         last_order_number = None
@@ -118,7 +117,8 @@ def info(message):
                     price INTEGER,
                     status INTEGER,
                     delivery TEXT,
-                    date_order DATETIME
+                    date_order DATETIME,
+                    nomer_ttn INTEGER
                 )
             ''')
             conn.commit()
@@ -164,7 +164,6 @@ def info(message):
 
             cursor.close()
             conn.close()
-
 
         # def info2Chapter(message):
         #     user_id = message.from_user.id
@@ -222,7 +221,9 @@ def goodsChapter(message):
     markup.row(button4)
     bot.send_message(message.chat.id, 'Ви перейшли у розділ "Продати річ" ', reply_markup=markup)
 
+
 last_messages = []
+
 
 def check_previous_messages(messages):
     has_photo = False
@@ -238,11 +239,14 @@ def check_previous_messages(messages):
     else:
         return "Ви відправили фото в останніх двох повідомленнях."
 
+
 def mygoodsChapter(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button3 = types.KeyboardButton('↩️ Назад до меню')
     markup.row(button3)
     bot.send_message(message.chat.id, 'Тут має бути список ваших речей:', reply_markup=markup)
+
+
 def settingsChapter(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button3 = types.KeyboardButton('↩️ Назад до меню')
@@ -255,7 +259,9 @@ def settingsChapter(message):
                                       '  - Доставка наложним платежем\n'
                                       '  - Доставка повною оплатою\n\n'
                                       '📦 Після відправки товару, прикріпіть номер накладної...\n\n'
-                                      '💸 Ми швидко перерахуємо гроші на вашу карту після отримання товару.', reply_markup=markup)
+                                      '💸 Ми швидко перерахуємо гроші на вашу карту після отримання товару.',
+                     reply_markup=markup)
+
 
 # Функция, отвечающая за раздел помощи
 def sentPhotoChapter(message):
@@ -264,29 +270,26 @@ def sentPhotoChapter(message):
     button2 = types.KeyboardButton('Я відправив усі фото')
     markup.row(button2)
     bot.send_message(message.chat.id, '''- 📌 Будь ласка відправте нам наступні фото
-    
+
     1️⃣ Надішліть фото цілої речі ззаду та спереду.
-    
+
     2️⃣ Додайте фото верхніх бирок.
-    
+
     3️⃣ Якщо є нижні бирки, зробіть фото й їх.
-    
+
     4️⃣ Також зробіть фото недоліків, якщо вони є.
-    
+
     5️⃣ Після того як ви завантажили необхідні фото, натисніть на кнопку 
-    
+
     “Я відправив усі фото”''', reply_markup=markup)
     text = "‼️*Будь ласка відправляйте правдиві фото, та всі недоліки.*\n" \
            "*Не гайте ні нашого, ні вашого часу. Кожна річ буде ретельно*\n" \
-           "*перевірена на почті.*"\
+           "*перевірена на почті.*" \
 
     bot.send_message(message.chat.id, text, parse_mode='Markdown')
-
-
-
-
-
         # def info2Chapter(message):
+
+
 #     user_id = message.from_user.id
 #
 #
@@ -304,22 +307,23 @@ def infoChapter(message):
     button2 = types.KeyboardButton('↩️ Назад до меню')
     markup.row(button1, button2)
     word1 = "  "
-    bot.send_message(message.chat.id,f'''        
+    bot.send_message(message.chat.id, f'''        
         {word1}Про нас 🙃
-    
+
 Ми - команда експертів, які спеціалізуються на скупці різного "вінтажного" та "кежуального". Наша мета - надати вам зручну та вигідну можливість продати непотрібні речі та отримати за них реальну вартість. 💰
-    
+
 Чому обрати нас? 🌟
-    
+
 1️⃣ Широкий спектр речей: Ми приймаємо до розгляду різноманітні види одягу, включаючи верхній одяг, штани, інколи взуття, аксесуари та багато іншого. 👕👖👟
-    
+
 2️⃣ Справедлива оцінка: Ми цінуємо ваші товари і ретельно оцінюємо їх, враховуючи бренд, стан та популярність. Наші професіонали гарантують справедливу вартість для ваших речей. 💎📈
-    
+
 3️⃣ Простий процес продажу: Ми зробили процес продажу максимально простим і зручним для вас. Ви надсилаєте нам фото товару, отримуєте оцінку, погоджуєтеся з ціною та обираєте спосіб доставки. Ми стежимо за кожним кроком, щоб ви отримали гарну взаємовигідну угоду. 📸✅🚚
-    
+
 4️⃣ Надійна та швидка оплата: Після прийняття вашого товару та підтвердження угоди, ми швидко перераховуємо гроші на ваш рахунок. Ми розуміємо, що час - цінний ресурс, тому ми робимо все можливе, щоб оплата була здійснена швидко та надійно. 💸⏱️
-    
-Ми пишаємося нашою командою експертів, яка зосереджена на вашому задоволенні та впевнена, що забезпечить вам зручний та вигідний досвід продажу. Приєднуйтесь до нашої спільноти і давайте разом знайдемо нове призначення для вашого непотрібного одягу! 💼''', reply_markup=markup)
+
+Ми пишаємося нашою командою експертів, яка зосереджена на вашому задоволенні та впевнена, що забезпечить вам зручний та вигідний досвід продажу. Приєднуйтесь до нашої спільноти і давайте разом знайдемо нове призначення для вашого непотрібного одягу! 💼''',
+                     reply_markup=markup)
 
 
 # def info2Chapter(message):
@@ -376,14 +380,16 @@ def send_all_photos(message):
         markup.row(button2)
 
         bot.send_message(message.chat.id, '✅ Ваші фото були успішно завантажені 😌\n\n'
-                                               '📍Щоб переглянути статус вашого товару перейдіть до розділу "Мої речі".\n\n'
-                                               '📍Один з наших працівників розгляне вашу пропозицію та запропонує вам найкращу ціну, роблячи це максимально швидко 🚀',
-                          reply_markup=markup)
+                                          '📍Щоб переглянути статус вашого товару перейдіть до розділу "Мої речі".\n\n'
+                                          '📍Один з наших працівників розгляне вашу пропозицію та запропонує вам найкращу ціну, роблячи це максимально швидко 🚀',
+                         reply_markup=markup)
     else:
         bot.send_message(message.chat.id, 'Ви не відправили жодного фото!')
 
     cursor.close()
     conn.close()
+
+
 def send_all_photos(message):
     conn = sqlite3.connect('photos.db')
     cursor = conn.cursor()
@@ -413,9 +419,9 @@ def send_all_photos(message):
         markup.row(button2)
 
         bot.send_message(message.chat.id, '✅ Ваші фото були успішно завантажені 😌\n\n'
-                                           '📍Щоб переглянути статус вашого товару перейдіть до розділу "Мої речі".\n\n'
-                                           '📍Один з наших працівників розгляне вашу пропозицію та запропонує вам найкращу ціну, роблячи це максимально швидко 🚀',
-                      reply_markup=markup)
+                                          '📍Щоб переглянути статус вашого товару перейдіть до розділу "Мої речі".\n\n'
+                                          '📍Один з наших працівників розгляне вашу пропозицію та запропонує вам найкращу ціну, роблячи це максимально швидко 🚀',
+                         reply_markup=markup)
     else:
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         button1 = types.KeyboardButton('Надіслати фото')
@@ -430,6 +436,7 @@ def send_all_photos(message):
 
 def OrestLoh(message):
     bot.send_message(message.chat.id, 'Так я з вами згоден,що Орест Лох, а також він МАВПА!')
+
 
 def OtsinkaTovaru(message):
     text2 = "‼*Як проходить оцінка товару?  🤔*\n\n" \
@@ -470,7 +477,7 @@ def OtsinkaTovaru(message):
 
 # Строчка, чтобы программа не останавливалась
 
-@bot.message_handler(func=lambda message: message.text == 'Мої речі')
+@bot.message_handler(func=lambda message: message.text.startswith('Мої речі'))
 def my_items(message):
     conn = sqlite3.connect('photos.db')
     cursor = conn.cursor()
@@ -487,56 +494,75 @@ def my_items(message):
             order_number = order_number[0]
 
             # Отримання статусу для кожного order_id користувача
-            cursor.execute('SELECT status, price FROM photos WHERE user_id = ? AND order_number = ?', (user_id, order_number))
+            cursor.execute('SELECT status, price, file, nomer_ttn FROM photos WHERE user_id = ? AND order_number = ?',
+                           (user_id, order_number))
             status_record = cursor.fetchone()
 
             if status_record:
                 status = status_record[0]
                 price = status_record[1]
+                photo_data = base64.b64decode(status_record[2])
+                ttn_number = status_record[3]
 
                 if status == 1:
-                    caption = f"🟢 Номер замовлення: {order_number}\n——————\n🟢 Статус: На розгляді\n——————\n🟢 Ціна запропонована нами: {price} грн\n——————\n🟢 Номер накладної: {order_number}"
+                    caption = f"🟢 Номер замовлення: {order_number}\n——————\n🟢 Статус: На розгляді\n——————\n🟢 Ціна запропонована нами: {price} грн\n——————\n🟢 Номер накладної: {ttn_number}"
                 elif status == 2:
-                    caption = f"🟢 Номер замовлення: {order_number}\n——————\n🟢 Статус: Ціна очікує вашого підтвердження\n——————\n🟢 Ціна запропонована нами: {price} грн\n——————\n🟢 Номер накладної: {order_number}"
+                    caption = f"🟢 Номер замовлення: {order_number}\n——————\n🟢 Статус: Ціна очікує вашого підтвердження\n——————\n🟢 Ціна запропонована нами: {price} грн\n——————\n🟢 Номер накладної: {ttn_number}"
                 elif status == 3:
-                    caption = f"🟢 Номер замовлення: {order_number}\n——————\n🟢 Статус: Ціна підтверджена вами\n——————\n🟢 Ціна запропонована нами: {price} грн\n——————\n🟢 Номер накладної: {order_number}"
+                    caption = f"🟢 Номер замовлення: {order_number}\n——————\n🟢 Статус: Ціна підтверджена вами\n——————\n🟢 Ціна запропонована нами: {price} грн\n——————\n🟢 Номер накладної: {ttn_number}"
                 elif status == 4:
-                    caption = f"🟢 Номер замовлення: {order_number}\n——————\n🟢 Статус: Оформлено доставку\n——————\n🟢 Ціна запропонована нами: {price} грн\n——————\n🟢 Номер накладної: {order_number}"
+                    caption = f"🟢 Номер замовлення: {order_number}\n——————\n🟢 Статус: Оформлено доставку\n——————\n🟢 Ціна запропонована нами: {price} грн\n——————\n🟢 Номер накладної: {ttn_number}"
 
+                    # Створення кнопки "Відправити номер ТТН"
+                    markup = types.InlineKeyboardMarkup()
+                    ttn_button = types.InlineKeyboardButton("Відправити номер ТТН", callback_data=f"ttn_{order_number}")
+                    markup.add(ttn_button)
+
+                    # Відправка повідомлення з фото, текстом та кнопкою
+                    bot.send_photo(chat_id=message.chat.id, photo=io.BytesIO(photo_data), caption=caption,
+                                   reply_markup=markup)
                 else:
-                    caption = f"🟢 Номер замовлення: {order_number}\n——————\n🟢 Статус: На розгляді\n——————\n🟢 Ціна запропонована нами: {price} грн\n——————\n🟢 Номер накладної: {order_number}"
+                    caption = f"🟢 Номер замовлення: {order_number}\n——————\n🟢 Статус: На розгляді\n——————\n🟢 Ціна запропонована нами: {price} грн\n——————\n🟢 Номер накладної: {ttn_number}"
 
-                # Отримання першого фото для кожного order_id користувача
-                cursor.execute('SELECT file FROM photos WHERE user_id = ? AND order_number = ? LIMIT 1',
-                               (user_id, order_number))
-                photo_record = cursor.fetchone()
+                    # Отримання першого фото для кожного order_id користувача
+                    cursor.execute('SELECT file FROM photos WHERE user_id = ? AND order_number = ? LIMIT 1',
+                                   (user_id, order_number))
+                    photo_record = cursor.fetchone()
 
-                if photo_record:
-                    encoded_photo = photo_record[0]
-                    photo_data = base64.b64decode(encoded_photo)
+                    if photo_record:
+                        encoded_photo = photo_record[0]
+                        photo_data = base64.b64decode(encoded_photo)
 
-                    # Формування повідомлення з фото та текстом
-                    bot.send_photo(chat_id=message.chat.id, photo=io.BytesIO(photo_data), caption=caption)
-                else:
-                    bot.reply_to(message, f"Не знайдено фото для замовлення з номером {order_number}")
+                        # Формування повідомлення з фото та текстом
+                        bot.send_photo(chat_id=message.chat.id, photo=io.BytesIO(photo_data), caption=caption)
+                    else:
+                        bot.reply_to(message, f"Не знайдено фото для замовлення з номером {order_number}")
 
             else:
                 bot.reply_to(message, f"Не знайдено статусу для замовлення з номером {order_number}")
-    else:
-        bot.reply_to(message, 'Не знайдено замовлень для відправлення!')
+@bot.callback_query_handler(func=lambda call: call.data.startswith('ttn_'))
+def handle_ttn_number(call):
+    order_number = call.data.split('_')[1]
+    bot.send_message(call.message.chat.id, "Введіть номер накладної ТТН:")
 
-    cursor.close()
+    # Реєструємо функцію, яка буде обробляти наступне повідомлення користувача
+    bot.register_next_step_handler(call.message, save_ttn_number, order_number)
+
+def save_ttn_number(message, order_number):
+    # Отримуємо введений користувачем номер ТТН
+    ttn_number = message.text
+
+    # Збереження номера ТТН у базу даних
+    conn = sqlite3.connect('photos.db')
+    cursor = conn.cursor()
+    cursor.execute('UPDATE photos SET nomer_ttn = ?, status = 5 WHERE order_number = ? AND user_id = ?',
+                   (ttn_number, order_number, message.from_user.id))
+    conn.commit()
     conn.close()
 
-
-@bot.message_handler(commands=['send_price'])
-def handle_send_price(message):
-    if message.from_user.id == 788388571:
-        bot.reply_to(message, 'Введіть номер замовлення')
-        bot.register_next_step_handler(message, process_order_number)
-    else:
-        bot.reply_to(message, 'У вас немає доступу до цієї команди.')
-
+    # Відправляємо відповідь користувачу
+    reply_text = f"Ви надіслали номер накладної ТТН: {ttn_number}. Номер ТТН збережено."
+    bot.send_message(message.chat.id, reply_text)
 def process_order_number(message):
     order_number = message.text
 
@@ -555,6 +581,7 @@ def process_order_number(message):
 
     cursor.close()
     conn.close()
+
 
 def process_price(message, owner_id, order_number):
     price = message.text
@@ -580,7 +607,6 @@ def process_price(message, owner_id, order_number):
     no_button = types.InlineKeyboardButton('Ні', callback_data='no')
     markup.add(yes_button, no_button)
     bot.send_message(owner_id, 'Поджуєтеся з ціною?', reply_markup=markup)
-
 
 
 # @bot.callback_query_handler(func=lambda call: call.data in ['cash_on_delivery', 'system_delivery'])
@@ -626,6 +652,7 @@ def handle_callback_query(call):
     elif call.data == 'no':
         propose_price(message, owner_id, group_id)
 
+
 def send_delivery_options(message, owner_id, group_id):
     # Відправити повідомлення з вибором способу доставки
     markup = types.InlineKeyboardMarkup(row_width=2)
@@ -634,12 +661,15 @@ def send_delivery_options(message, owner_id, group_id):
     markup.add(delivery_option1, delivery_option2)
     bot.send_message(owner_id, 'Оберіть спосіб доставки:', reply_markup=markup)
 
+
 def propose_price(message, owner_id, group_id):
     global current_order_number
     if current_order_number:
-        bot.send_message(group_id, f"@{message.chat.username} не погодився з ціною менеджера. Зв'яжіться з ним\nНомер замовлення: {current_order_number}")
+        bot.send_message(group_id,
+                         f"@{message.chat.username} не погодився з ціною менеджера. Зв'яжіться з ним\nНомер замовлення: {current_order_number}")
     else:
         bot.send_message(group_id, f"@{message.chat.username} не погодився з ціною менеджера. Зв'яжіться з ним")
+
 
 @bot.message_handler(commands=['send_price'])
 def handle_send_price(message):
@@ -669,6 +699,7 @@ def process_order_number(message):
     cursor.close()
     conn.close()
 
+
 def process_price(message, owner_id, order_number):
     price = message.text
 
@@ -694,6 +725,7 @@ def process_price(message, owner_id, order_number):
     markup.add(yes_button, no_button)
     bot.send_message(owner_id, 'Погоджуєтесь з ціною?', reply_markup=markup)
 
+
 @bot.callback_query_handler(func=lambda call: call.data in ['yes', 'no'])
 def handle_callback_query(call):
     message = call.message
@@ -708,13 +740,15 @@ def handle_callback_query(call):
         propose_price(message, owner_id, group_id)
 
 
-
 def propose_price(message, owner_id, group_id):
     global current_order_number
     if current_order_number:
-        bot.send_message(group_id, f"@{message.chat.username} не погодився з ціною менеджера. Зв'яжіться з ним\nНомер замовлення: {current_order_number}")
+        bot.send_message(group_id,
+                         f"@{message.chat.username} не погодився з ціною менеджера. Зв'яжіться з ним\nНомер замовлення: {current_order_number}")
     else:
         bot.send_message(group_id, f"@{message.chat.username} не погодився з ціною менеджера. Зв'яжіться з ним")
+
+
 def send_delivery_options(message, owner_id, group_id):
     global current_order_number
     if current_order_number:
@@ -726,6 +760,7 @@ def send_delivery_options(message, owner_id, group_id):
         bot.send_message(owner_id, 'Оберіть спосіб доставки:', reply_markup=markup)
     else:
         bot.send_message(group_id, f"@{message.chat.username} не погодився з ціною менеджера. Зв'яжіться з ним")
+
 
 @bot.callback_query_handler(func=lambda call: call.data in ['delivery1', 'delivery2'])
 def handle_delivery_selection(call):
@@ -793,20 +828,20 @@ def handle_choose_cod(call):
         text2 = "‼*Будь ласка, відправте ваш товар за нижче вказаною адресою:*\n\n" \
                 "🏢 Присяжнюк Орест Ігорович\n" \
                 "☎️ +380679770216\n" \
-                "📍 Рівне, Рівненська область\n"\
-        "📮 Відділення Нової Пошти номер 2"
+                "📍 Рівне, Рівненська область\n" \
+                "📮 Відділення Нової Пошти номер 2"
         bot.send_message(message.chat.id, text2, parse_mode='Markdown')
         bot.send_message(group_id,
                          f"@{message.chat.username} обрав доставку наложним платежем. Номер замовлення: {current_order_number}")
     else:
         bot.send_message(owner_id, "Ви вже обрали спосіб доставки.")
 
+
 @bot.callback_query_handler(func=lambda call: call.data == 'choose_system_delivery')
 def handle_choose_system_delivery(call):
     message = call.message
     owner_id = message.chat.id
     group_id = '-917631518'  # Замініть на фактичний ID вашої групи
-
 
     if get_delivery_status(current_order_number) is None:
         # Оновити поле delivery на "Доставка наложним платежем" у базі даних
@@ -835,6 +870,8 @@ def get_delivery_status(order_number):
         return result[0]
     else:
         return None
+
+
 def update_delivery(order_number, delivery):
     conn = sqlite3.connect('photos.db')
     cursor = conn.cursor()
@@ -842,6 +879,8 @@ def update_delivery(order_number, delivery):
     conn.commit()
     cursor.close()
     conn.close()
+
+
 # @bot.callback_query_handler(func=lambda call: call.data in ['delivery_option1', 'delivery_option2'])
 # def handle_delivery_option_query(call):
 #     message = call.message
@@ -941,6 +980,7 @@ def update_order_status(order_number, status):
     cursor.close()
     conn.close()
 
+
 # def get_delivery_option(option):
 #     if option == 'choose_delivery':
 #         return 1  # Значення для доставки наложним платежем
@@ -951,11 +991,11 @@ def update_order_status(order_number, status):
 current_order_number = 1
 
 
-
 @bot.message_handler(func=lambda message: message.text == 'Речі, які ми купуємо')
 def handle_buying_items(message):
     markup = create_inline_keyboard()
     bot.send_message(message.chat.id, 'Ось список речей, які ми купуємо:', reply_markup=markup)
+
 
 def create_inline_keyboard():
     markup = types.InlineKeyboardMarkup(row_width=2)
@@ -975,6 +1015,7 @@ def create_inline_keyboard():
     )
 
     return markup
+
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('buying_item_'))
 def handle_buying_item_callback(call):
@@ -1040,5 +1081,7 @@ def handle_buying_item_callback(call):
         message = 'Невідома річ'
 
     bot.send_message(call.message.chat.id, message)
+
+
 #     917631518
 bot.polling(none_stop=True)
